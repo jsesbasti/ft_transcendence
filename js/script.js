@@ -48,9 +48,11 @@
 // import { Application, Assets, Container, Sprite } from './pixi.min.js';
 // import * as PIXI from "./pixi.min.js";
 
+let dir;
 let app;
 let player1;
 let player2;
+let ball;
 let keys = {};
 let margin;
 
@@ -74,6 +76,7 @@ let margin;
 	container.x = 0;
 	container.y = margin;
 
+	dir = 1;
 	let rect = await PIXI.Assets.load("images/rect.png");
 	player1 = new PIXI.Sprite(rect);
 	player1.anchor.set(0.5);
@@ -86,8 +89,15 @@ let margin;
 	player2.y = (app.view.height - (margin * 2)) / 2;
 	player2.height = 80;
 
+	let circle = await PIXI.Assets.load("images/ball-1.png.png");
+	ball = new PIXI.Sprite(circle);
+	ball.anchor.set(0.5);
+	ball.x = app.view.width / 2;
+	ball.y = (app.view.height - (margin * 2)) / 2;
+
 	container.addChild(player1);
 	container.addChild(player2);
+	container.addChild(ball);
 
 	app.stage.addChild(top);
 	app.stage.addChild(bottom);
@@ -101,12 +111,12 @@ let margin;
 	app.ticker.add(gameLoop);
 	// app.stage.interactive = true;
 	// app.stage.on("pointermove", movePlayer);
-})();
-
+	})();
+	
 function keyUp (e) {
 	console.log(e.keyCode);
 	keys[e.keyCode] = false;
-}
+}		
 
 function keyDown (e) {
 	console.log(e.keyCode);
@@ -114,6 +124,7 @@ function keyDown (e) {
 }
 
 function gameLoop () {
+	moveBall();
 	let yCheck1Min = player1.y - (player1.height / 2) - 5 < 0;
 	let yCheck2Min = player2.y - (player2.height / 2) - 5 < 0;
 	let yCheck1Max = player1.y + (player1.height / 2) + 5 >= margin * 2;
@@ -128,6 +139,29 @@ function gameLoop () {
 		player2.y += 5;
 }
 
+
+function moveBall() {
+	checkCollisionPlayer();
+	if (dir == -1)
+		ball.x -= 5;
+	if (dir == 1)
+		ball.x += 5;
+}
+
+
+function checkCollisionPlayer() {
+	if (ball.x - 5 == player1.x && (ball.y <= player1.y + (player1.height / 2) && ball.y >= player1.y - (player1.height / 2)))
+	{
+		ball.x += 5;
+		dir = 1;
+	}
+	else if (ball.x + 5 == player2.x && (ball.y <= player2.y + (player2.height / 2) && ball.y >= player2.y - (player2.height / 2)))
+	{
+		ball.x -= 5
+		dir = -1;
+	}
+}
+
 // function movePlayer (e) {
-// 	let pos = e.data.global;
-// }
+	// 	let pos = e.data.global;
+	// }
