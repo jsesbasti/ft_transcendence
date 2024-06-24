@@ -52,9 +52,10 @@ let dir;
 let app;
 let player1;
 let player2;
-let ball;
 let keys = {};
 let margin;
+let speed;
+let ball;
 
 (async () => {
 	// Create a new application
@@ -94,6 +95,7 @@ let margin;
 	ball.anchor.set(0.5);
 	ball.x = app.view.width / 2;
 	ball.y = (app.view.height - (margin * 2)) / 2;
+	speed = 1.5;
 
 	container.addChild(player1);
 	container.addChild(player2);
@@ -107,6 +109,7 @@ let margin;
 
 	window.addEventListener("keyup", keyUp);
 	window.addEventListener("keydown", keyDown);
+	window.addEventListener("resize", resizeGame);
 
 	app.ticker.add(gameLoop);
 	// app.stage.interactive = true;
@@ -121,6 +124,27 @@ function keyUp (e) {
 function keyDown (e) {
 	console.log(e.keyCode);
 	keys[e.keyCode] = true;
+}
+
+function resizeGame() { 
+	const originalWidth = app.view.width;
+	const originalHeight = app.view.height;
+
+	app.resize();
+
+	const newWidth = app.view.width;
+	const newHeight = app.view.height;
+
+	const scaleX = newWidth / originalWidth;
+	const scaleY = newHeight / originalHeight;
+
+	player2.x *= scaleX;
+	player1.x *= scaleX;
+	ball.x *= scaleX;
+
+	player2.y *= scaleY;
+	player1.y *= scaleY;
+	ball.y *= scaleY;
 }
 
 function gameLoop () {
@@ -139,29 +163,34 @@ function gameLoop () {
 		player2.y += 5;
 }
 
-
 function moveBall() {
-	checkCollisionPlayer();
-	if (dir == -1)
-		ball.x -= 5;
-	if (dir == 1)
-		ball.x += 5;
+	if (!checkGoal())
+	{
+		checkCollisionPlayer();
+		ball.x += (dir * (1 * speed));
+		moveBallY();
+	}
 }
-
 
 function checkCollisionPlayer() {
-	if (ball.x - 5 == player1.x && (ball.y <= player1.y + (player1.height / 2) && ball.y >= player1.y - (player1.height / 2)))
+	if (ball.x <= (player1.x + 16) && (ball.y <= player1.y + (player1.height / 2) && ball.y >= player1.y - (player1.height / 2)))
 	{
-		ball.x += 5;
 		dir = 1;
+		speed += 0.25;
 	}
-	else if (ball.x + 5 == player2.x && (ball.y <= player2.y + (player2.height / 2) && ball.y >= player2.y - (player2.height / 2)))
+	else if (ball.x >= (player2.x - 16) && (ball.y <= player2.y + (player2.height / 2) && ball.y >= player2.y - (player2.height / 2)))
 	{
-		ball.x -= 5
 		dir = -1;
+		speed += 0.25;
 	}
 }
 
-// function movePlayer (e) {
-	// 	let pos = e.data.global;
-	// }
+function checkGoal(){
+	if (ball.x < player1.x - 16 || ball.x > player2.x + 16)
+		return true;
+	return (false);
+}
+
+function moveBallY(){
+	
+}
