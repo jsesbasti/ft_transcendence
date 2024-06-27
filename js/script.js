@@ -48,13 +48,13 @@
 // import { Application, Assets, Container, Sprite } from './pixi.min.js';
 // import * as PIXI from "./pixi.min.js";
 
-let dir;
+const dir = {x:1, y:1};
 let app;
 let player1;
 let player2;
 let keys = {};
 let margin;
-let speed;
+const speed = {x:5, y:3, o_x:2, o_y:1};
 let ball;
 
 (async () => {
@@ -77,16 +77,16 @@ let ball;
 	container.x = 0;
 	container.y = margin;
 
-	dir = 1;
-	let rect = await PIXI.Assets.load("images/rect.png");
-	player1 = new PIXI.Sprite(rect);
+	let rect_blue = await PIXI.Assets.load("images/rect.png");
+	let	rect_red = await PIXI.Assets.load("images/payer2.png");
+	player1 = new PIXI.Sprite(rect_blue);
 	player1.anchor.set(0.5);
-	player1.x = app.view.width / 4;
+	player1.x = app.view.width / 9;
 	player1.y = (app.view.height - (margin * 2)) / 2;
 	player1.height = 80;
-	player2 = new PIXI.Sprite(rect);
+	player2 = new PIXI.Sprite(rect_red);
 	player2.anchor.set(0.5);
-	player2.x = app.view.width / 4 * 3;
+	player2.x = app.view.width / 9 * 8;
 	player2.y = (app.view.height - (margin * 2)) / 2;
 	player2.height = 80;
 
@@ -95,7 +95,6 @@ let ball;
 	ball.anchor.set(0.5);
 	ball.x = app.view.width / 2;
 	ball.y = (app.view.height - (margin * 2)) / 2;
-	speed = 1.5;
 
 	container.addChild(player1);
 	container.addChild(player2);
@@ -167,30 +166,60 @@ function moveBall() {
 	if (!checkGoal())
 	{
 		checkCollisionPlayer();
-		ball.x += (dir * (1 * speed));
+		ball.x += (dir.x * speed.x);
 		moveBallY();
 	}
 }
 
 function checkCollisionPlayer() {
-	if (ball.x <= (player1.x + 16) && (ball.y <= player1.y + (player1.height / 2) && ball.y >= player1.y - (player1.height / 2)))
+	let player1_U_Limit = player1.y + (player1.height / 2);
+	let player1_D_Limit = player1.y - (player1.height / 2);
+	let player2_U_Limit = player2.y + (player2.height / 2);
+	let player2_D_Limit = player2.y - (player2.height / 2);
+
+	if (ball.x <= (player1.x + 16) && ball.y >= player1.y - 5 && ball.y <= player1.y + 5)
 	{
-		dir = 1;
-		speed += 0.25;
+		dir.x = 1;
+		speed.x *= 0.75;
+		speed.y *= 0.75;
 	}
-	else if (ball.x >= (player2.x - 16) && (ball.y <= player2.y + (player2.height / 2) && ball.y >= player2.y - (player2.height / 2)))
+	else if (ball.x <= (player1.x + 16) && (ball.y <= player1_U_Limit && ball.y >= player1_D_Limit))
 	{
-		dir = -1;
-		speed += 0.25;
+		dir.x = 1;
+		speed.x += 0.25;
+	}
+	if (ball.x >= (player2.x - 16) && ball.y >= player2.y - 5 && ball.y <= player2.y + 5)
+	{
+		dir.x = -1;
+		speed.x *= 0.75;
+		speed.y *= 0.75;
+	}
+	else if (ball.x >= (player2.x - 16) && (ball.y <= player2_U_Limit && ball.y >= player2_D_Limit))
+	{
+		dir.x = -1;
+		speed.x += 0.25;
 	}
 }
 
 function checkGoal(){
-	if (ball.x < player1.x - 16 || ball.x > player2.x + 16)
+	if (ball.x < (player1.x - 16) || ball.x > (player2.x + 16))
 		return true;
 	return (false);
 }
 
 function moveBallY(){
-	
+	let yCheckMax = ball.y + (ball.height / 2);
+	let yCheckMin = ball.y - (ball.height / 2);
+
+	ball.y += (dir.y * speed.y);
+	if (yCheckMax >= margin * 2)
+	{
+		dir.y = -1;
+		speed.y += 0.05;
+	}
+	else if (yCheckMin <= 0)
+	{
+		dir.y = 1;
+		speed.y += 0.05;
+	}
 }
