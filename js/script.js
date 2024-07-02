@@ -50,6 +50,7 @@
 
 const dir = {x:1, y:1};
 let app;
+// let player1 = { goals:0, sprite:{} };
 let player1;
 let player2;
 let keys = {};
@@ -103,7 +104,7 @@ let ball;
 	app.stage.addChild(top);
 	app.stage.addChild(bottom);
 	app.stage.addChild(container);
-	// app.stage.addChild(player1);
+	// app.stage.addChild(player1.sprite);
 	// app.stage.addChild(player2);
 
 	window.addEventListener("keyup", keyUp);
@@ -169,6 +170,8 @@ function moveBall() {
 		ball.x += (dir.x * speed.x);
 		moveBallY();
 	}
+	// else
+	// 	reset();
 }
 
 function checkCollisionPlayer() {
