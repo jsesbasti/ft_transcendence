@@ -1,0 +1,11 @@
+version 3
+
+services:
+  backend:
+    container_name: django
+    build:  ./srcs/back
+    image:  django
+    env_file: .env
+
+    volumes:
+      - web_data:/
