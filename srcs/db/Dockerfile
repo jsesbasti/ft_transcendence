@@ -1,5 +1,5 @@
 FROM postgres:17.1-alpine3.20
 
-WORKDIR 
+WORKDIR /var/lib/mysql
 
-expose  5432
+EXPOSE  5432

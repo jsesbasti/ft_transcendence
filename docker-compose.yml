@@ -15,28 +15,28 @@ services:
     env_file: ./srcs/back/.env_back
     restart:  always
     networks:
-      - transcendence-net
+      - "transcendence-net"
     volumes:
-      - media_data:
+      - media_data:/var/static/media
   
   frontend:
     build: ./srcs/front
     ports:
       - 8181:8080
-    env_file: ./srcs/front/.env
+    env_file: ./srcs/front/.env_front
     restart: always
     networks:
-      - transcendence-net
+      - "transcendence-net"
 
   postgresql:
     build: ./srcs/db
     image: postgresql
-    env_file: .env
+    env_file: ./srcs/db/.env_db
     restart: always
     volumes:
       - db_data:/var/lib/mysql/data
     networks:
-      - transcendence-net
+      - "transcendence-net"
 
 
 volumes:
