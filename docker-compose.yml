@@ -1,11 +1,56 @@
-version 3
+version: '3'
+
+name: ft_transcendence
+
+networks:
+  transcendence-net:
+    - type: bridge
 
 services:
   backend:
-    container_name: django
-    build:  ./srcs/back
-    image:  django
-    env_file: .env
-
+    build: ./srcs/back
+    image: python:3.14.0a2-alpine
+    depends_on:
+      - "postgresql"
+    env_file: ./srcs/back/.env_back
+    restart:  always
+    networks:
+      - transcendence-net
     volumes:
-      - web_data:/
+      - media_data:
+  
+  frontend:
+    build: ./srcs/front
+    ports:
+      - 8181:8080
+    env_file: ./srcs/front/.env
+    restart: always
+    networks:
+      - transcendence-net
+
+  postgresql:
+    build: ./srcs/db
+    image: postgresql
+    env_file: .env
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql/data
+    networks:
+      - transcendence-net
+
+
+volumes:
+  media_data:
+    type: bind
+    source: ${PWD}data/media_data
+    target: /var/statc/media/
+    driver: o
+      
+  db_data:
+    type: bind
+    source: ${PWD}/data/db_data
+    target: /var/lib/mysql/data
+
+secrets:
+  my_secret:
+    file: ./scret_file.txt

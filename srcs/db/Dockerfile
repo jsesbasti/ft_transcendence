@@ -1,7 +1,5 @@
-FROM postgres:latest
+FROM postgres:17.1-alpine3.20
 
-ENV POSTGRES_USER=${POSTGRES_USR}
-ENV POSTGRES_PASSWORD=${POSTGRES_PASSWD}
-ENV POSTGRES_DB=transcendence
+WORKDIR 
 
 expose  5432
